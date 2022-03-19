@@ -1,16 +1,3 @@
-## PyBank Instructions
-
-#In this challenge, you are tasked with creating a Python script to analyze the financial 
-#records of your company. You will give a set of financial data called [budget_data.csv]
-#(PyBank/Resources/budget_data.csv). The dataset is composed of two columns: "Date" and 
-#"Profit/Losses". 
-
-#Your task is to create a Python script that analyzes the records to calculate each of the following:
-
-
-#* The greatest increase in profits (date and amount) over the entire period
-#* The greatest decrease in profits (date and amount) over the entire period
-
 #Your analysis should look similar to the following:
 #  Financial Analysis
 #  Total Months: 86
@@ -19,11 +6,12 @@
 #  Greatest Increase in Profits: Aug-16 ($1862002)
 #  Greatest Decrease in Profits: Feb-14 ($-1825558)
 
-#Your final script should both print the analysis to the terminal and export a text file with the results.
-#
+#Your final script should both print the analysis to the terminal and
+#export a text file with the results.
 
 import os
 import csv
+import numpy as np
 
 #Accessing csv data and making workable
 dates = []
@@ -35,19 +23,31 @@ with open(bank_csv) as csvfile:
     print(f"Header: {csv_header}")
     for row in csvreader:
         dates.append(row[0])
-        profit_losses.append(row[1])
+        profit_losses.append(int(row[1]))
+
+print("Financial Analysis")
 
 #Finds the total number of months included in the dataset
-months = []
-[months.append(date[0:3]) for date in dates if date[0:3] not in months]       
-num_months = len(months)
-print(f"Total number of months in the dataset: {num_months}")
+print(f"Total Months: {len(dates)}")
 
 #Finds the net total amount of "Profit/Losses" over the entire period
-net_total = 0
-for x in profit_losses:
-    net_total += int(x)
-print(f"Total amount of Profits/Losses: {net_total}")  
+print(f"Total: ${sum(profit_losses)}")  
 
-#Find the changes in "Profit/Losses" over the entire period, 
+#Finds the changes in "Profit/Losses" over the entire period, 
 #and then the average of those changes
+changes = []
+for x in range(len(profit_losses)-1):
+    changes.append(profit_losses[x+1] - profit_losses[x])
+
+change_average = round(np.average(changes), 2)
+print(f"Average change: ${change_average}")
+
+#Finds the greatest increase in profits (date and amount) over the entire period
+big_profit = max(changes)
+big_profit_day = dates[changes.index(big_profit)+1]
+print(f"Greatest Increase in Profits: {big_profit_day} (${big_profit})")
+
+#Finds the greatest decrease in profits (date and amount) over the entire period
+big_loss = min(changes)
+big_loss_day = dates[changes.index(big_loss)+1]
+print(f"Greatest Decrease in Profits: {big_loss_day} (${big_loss})")
