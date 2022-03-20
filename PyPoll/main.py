@@ -1,48 +1,57 @@
-#Your analysis should look similar to the following:
- # Election Results
-  #Total Votes: 369711
-  #Charles Casper Stockham: 23.049% (85213)
-  #Diana DeGette: 73.812% (272892)
-  #Raymon Anthony Doane: 3.139% (11606)
-  #Winner: Diana DeGette
-
-#Your final script should both print the analysis to the terminal and export a text file with the results.
-
 import os
 import csv
 
 #Accessing csv data and making workable
-voter_ids = []
-counties = []
-candidates = []
+output = []
+cands = {}
 poll_csv = os.path.join("Resources", "election_data.csv")
 with open(poll_csv) as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=",")
-    csv_header = next(csvfile)
-    for row in csvreader:
-        voter_ids.append(row[0])
-        counties.append(row[1])
-        candidates.append(row[2])
+  csvreader = csv.reader(csvfile, delimiter=",")
+  csv_header = next(csvfile)
+  for row in csvreader:
+    #creates candidate dict, where key is candidate and value is number of votes they received
+    if row[2] not in cands:
+      cands[row[2]] = 0
+    cands[row[2]] += 1
 
+#print and output header 
 header = "Election Results"
-print(header)
+output.append(header)
+output.append("\n")
+print(header)   
 
-#The total number of votes cast
-line1 = f"Total Votes: {len(voter_ids)}"
+#sum up total votes
+total_votes = 0
+for cand in cands:
+  total_votes += cands[cand]
+
+#print and output total votes
+line1 = f"Total Votes: {total_votes}"
+output.append(line1) 
+output.append("\n")
 print(line1)
 
-#A complete list of candidates who received votes, 
-# along with the percentage of votes each candidate won, 
-# and the total number of votes each candidate won
-line234 = f"{name}: {percent}% ({total_votes})"
-print(line234)
+#print and output each candidate, % votes, and # votes
+#determines winner
+winner_name = ""
+winning_votes = 0
+for cand in cands:
+  cand_votes = cands[cand]
+  percent = round(cand_votes/total_votes*100, 3)
+  line = f"{cand}: {percent}% ({cand_votes})"
+  output.append(line)
+  output.append("\n")
+  print(line)
+  if winning_votes < cand_votes:
+    winning_votes = cand_votes
+    winner_name = cand
 
-#The winner of the election based on popular vote.
-line5 = f"Winner: {winner)}"
-print(line1)
+#print and output winner
+line5 = f"Winner: {winner_name}"
+output.append(line5)
+print(line5)
 
 #Creates output file
-output = [header,"\n", line1, "\n", line2, "\n", line3, "\n", line4, "\n", line5]
 analysis_path = os.path.join("Analysis", "analysis.txt")
 with open(analysis_path, "w") as datafile:
     datafile.writelines(output)
